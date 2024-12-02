@@ -2,8 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { CurrentScreen } from './main'
 
-function App() {
+function App(props: { setScreen: (screen: CurrentScreen) => void }) {
+  const { setScreen } = props
   const [count, setCount] = useState(0)
 
   return (
@@ -29,7 +31,9 @@ function App() {
         Click on the Vite and React logos to learn more
       </p>
 
-      <button>Click me to start the game!</button>
+      <button onClick={() => {
+        setScreen('game')
+      }}>Click me to start the game!</button>
     </>
   )
 }
