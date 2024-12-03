@@ -1,5 +1,7 @@
 type Direction = 'left' | 'right' | 'none'
 
+
+
 export class Game {
   player = new Player()
 
@@ -54,27 +56,45 @@ class Player {
 
   dir: Direction = "none"
 
+  keys = {
+    a: {
+      pressed: false
+    },
+    d: {
+      pressed: false
+    },
+  }
+
   handleInputs() {
     window.addEventListener("keydown", (e) => {
       if (e.key === 'a') {
-        this.dir = 'left'
+        this.keys.a.pressed = true
       }
       else if (e.key === 'd') {
-        this.dir = 'right'
-      }
-      else {
-        this.dir = 'none'
+        this.keys.d.pressed = true
       }
     })
     window.addEventListener("keyup", (e) => {
-      if (e.key === 'a' || e.key === 'd') {
-        this.dir = 'none'
+      if (e.key === 'a') {
+        this.keys.a.pressed = false
+      }
+      if (e.key === 'd') {
+        this.keys.d.pressed = false
       }
     })
   }
 
   update(dt: number) {
     this.handleInputs()
+
+    if (this.keys.a.pressed) {
+      this.dir = 'left'
+    } else if (this.keys.d.pressed) {
+      this.dir = 'right'
+    } else {
+      this.dir = 'none'
+    }
+
     if (this.dir === 'right') {
       this.rec.x += 1000 * dt
     }
