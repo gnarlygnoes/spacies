@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { initAndGetCanvas } from './canvas.ts'
+import { Game } from './game.ts'
 // import { initAndGetCanvas } from './canvas'
 
 createRoot(document.getElementById('root')!).render(<GameUI />)
@@ -16,7 +17,8 @@ function GameUI() {
   useEffect(() => {
     if (screen === 'game') {
       const canvas = initAndGetCanvas()
-      // const game = new Game(canvas)
+      const game = new Game(canvas)
+      game.gameLoop()
       //game.startLoop()
     }
   }, [screen])

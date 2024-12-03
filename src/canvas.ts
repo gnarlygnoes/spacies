@@ -20,18 +20,18 @@ function manageCanvas(ctx: CanvasRenderingContext2D) {
 }
 
 function setCanvasSize(ctx: CanvasRenderingContext2D) {
-  const size = pickSize(innerWidth, innerHeight)
+  const height = pickSize(innerWidth, innerHeight)
 
-  ctx.canvas.width = size
-  ctx.canvas.height = size
+  ctx.canvas.width = height * .8
+  ctx.canvas.height = height
 }
 
 function pickSize(width: number, height: number): number {
-  const maxSize = 1200
+  const maxHeight = 1200
   const smallerOne = Math.min(width, height)
 
-  if (smallerOne < maxSize) {
+  if (smallerOne < maxHeight) {
     return smallerOne
   }
-  return maxSize
+  return maxHeight
 }
