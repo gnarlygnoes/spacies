@@ -1,4 +1,4 @@
-interface Rec {
+export interface Rec {
   x: number, y: number, w: number, h: number
 }
 
@@ -42,7 +42,7 @@ export class Player {
     })
   }
 
-  update(dt: number) {
+  update(dt: number, screenWidth: number, screenHeight: number) {
     this.handleInputs()
 
     if (this.keys.left.pressed) {
@@ -59,5 +59,14 @@ export class Player {
     if (this.dir === 'left') {
       this.rec.x -= 1000 * dt
     }
+
+    if (this.rec.x + this.rec.w > screenWidth) {
+      this.rec.x = screenWidth - this.rec.w
+    }
+    if (this.rec.x < 0) {
+      this.rec.x = 0
+    }
+
+    this.rec.y = screenHeight - this.rec.h - 10
   }
 }

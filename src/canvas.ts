@@ -20,7 +20,7 @@ function manageCanvas(ctx: CanvasRenderingContext2D) {
 }
 
 function setCanvasSize(ctx: CanvasRenderingContext2D) {
-  const height = pickSize(innerWidth, innerHeight)
+  const height = pickSize(innerWidth, innerHeight) - 100
 
   ctx.canvas.width = height * .8
   ctx.canvas.height = height
