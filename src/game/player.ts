@@ -8,8 +8,8 @@ export class Player {
   rec: Rec = {
     x: 0,
     y: 0,
-    w: 60,
-    h: 80,
+    w: 0,
+    h: 0,
   }
 
   dir: Direction = "none"
@@ -21,7 +21,12 @@ export class Player {
     right: {
       pressed: false
     },
+    shoot: {
+      pressed: false
+    }
   }
+
+  shooting = false
 
   handleInputs() {
     window.addEventListener("keydown", (e) => {
@@ -31,7 +36,14 @@ export class Player {
       else if (e.key === 'd') {
         this.keys.right.pressed = true
       }
+      if (e.key === ' ') {
+        this.keys.shoot.pressed = true
+        this.shooting = true
+      }
+
+      //console.log(e)
     })
+
     window.addEventListener("keyup", (e) => {
       if (e.key === 'a') {
         this.keys.left.pressed = false
@@ -39,7 +51,16 @@ export class Player {
       if (e.key === 'd') {
         this.keys.right.pressed = false
       }
+      if (e.key === ' ') {
+        this.keys.shoot.pressed = false
+      }
     })
+  }
+
+  shoot() {
+    if (this.keys.shoot.pressed) {
+      this.shooting = true
+    }
   }
 
   update(dt: number, screenWidth: number, screenHeight: number) {
@@ -54,10 +75,10 @@ export class Player {
     }
 
     if (this.dir === 'right') {
-      this.rec.x += 1000 * dt
+      this.rec.x += (screenWidth * 1.25) * dt
     }
     if (this.dir === 'left') {
-      this.rec.x -= 1000 * dt
+      this.rec.x -= (screenWidth * 1.25) * dt
     }
 
     if (this.rec.x + this.rec.w > screenWidth) {

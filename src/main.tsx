@@ -18,8 +18,7 @@ function GameUI() {
     if (screen === 'game') {
       const canvas = initAndGetCanvas()
       const game = new Game(canvas)
-      game.gameLoop()
-      //game.startLoop()
+      game.initGame()
     }
   }, [screen])
 
