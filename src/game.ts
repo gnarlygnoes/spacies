@@ -23,17 +23,25 @@ export class Game {
   pBullets = new Map()
 
   time = 0
+  enemyDir = 1
+  enemyDrop = false
 
   initPlayer() {
+    let w = this.ctx.canvas.width / 15
+    let h = this.ctx.canvas.height / 15
+    let x = this.ctx.canvas.width / 2 - w / 2
+    let y = this.ctx.canvas.height - h - 2
+
+
     this.player.rec = {
-      x: this.ctx.canvas.width / 2 - this.player.rec.w / 2,
-      y: this.player.rec.y = this.ctx.canvas.height - this.player.rec.h - 2,
-      w: this.ctx.canvas.width / 15,
-      h: this.ctx.canvas.height / 15,
+      x: x,
+      y: y,
+      w: w,
+      h: h,
     }
   }
 
-  initPlayerBullets() {
+  initPlayerBullet() {
     if (this.player.shooting) {
 
       this.pBullet = {
@@ -89,7 +97,7 @@ export class Game {
 
   updatePlayerBullets(dt: number) {
     if (this.player.shooting) {
-      this.initPlayerBullets()
+      this.initPlayerBullet()
     }
 
     for (let [id, bullet] of this.pBullets) {
@@ -106,8 +114,13 @@ export class Game {
     this.time += dt
     if (this.time > 1) {
       this.time = 0
-    }
+      this.moveEnemies()
 
+    }
+    this.removeTheDead()
+  }
+
+  removeTheDead() {
     for (let row of this.enemies) {
       for (let e of row) {
         if (!e.alive) {
@@ -116,6 +129,38 @@ export class Game {
             y: 0,
             w: 0,
             h: 0
+          }
+        }
+      }
+    }
+  }
+
+  moveEnemies() {
+    for (let row of this.enemies) {
+      for (let e of row) {
+        e.rec.x += this.ctx.canvas.width / 32 * this.enemyDir
+        if (this.enemyDrop) {
+          e.rec.y += this.ctx.canvas.height / 32
+        }
+      }
+    }
+    this.enemyDrop = false
+    for (let i = this.enemies.length - 1; i >= 0; i--) {
+      for (let j = this.enemies[i].length - 1; j >= 0; j--) {
+        if (this.enemies[i][j].alive) {
+          if (this.enemies[i][j].rec.x + this.enemies[i][j].rec.w > this.ctx.canvas.width - this.ctx.canvas.width / 32) {
+            this.enemyDir = -1
+            this.enemyDrop = true
+          }
+        }
+      }
+    }
+    for (let row of this.enemies) {
+      for (let e of row) {
+        if (e.alive) {
+          if (e.rec.x < this.ctx.canvas.width / 32) {
+            this.enemyDir = 1
+            this.enemyDrop = true
           }
         }
       }

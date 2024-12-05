@@ -4,7 +4,7 @@ export interface Rec {
   x: number, y: number, w: number, h: number
 }
 
-type Direction = 'left' | 'right' | 'none'
+export type Direction = 'left' | 'right' | 'none'
 
 export class Player {
   rec: Rec = {
