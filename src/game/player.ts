@@ -1,3 +1,5 @@
+import { Weapon } from "./weapon"
+
 export interface Rec {
   x: number, y: number, w: number, h: number
 }
@@ -27,6 +29,9 @@ export class Player {
   }
 
   shooting = false
+  reloading = false
+  bTime = 0
+  reloadTime = .2
 
   handleInputs() {
     window.addEventListener("keydown", (e) => {
@@ -38,7 +43,6 @@ export class Player {
       }
       if (e.key === ' ') {
         this.keys.shoot.pressed = true
-        this.shooting = true
       }
 
       //console.log(e)
@@ -57,15 +61,7 @@ export class Player {
     })
   }
 
-  shoot() {
-    if (this.keys.shoot.pressed) {
-      this.shooting = true
-    }
-  }
-
-  update(dt: number, screenWidth: number, screenHeight: number) {
-    this.handleInputs()
-
+  movePlayer(dt: number, screenWidth: number, screenHeight: number) {
     if (this.keys.left.pressed) {
       this.dir = 'left'
     } else if (this.keys.right.pressed) {
@@ -89,5 +85,34 @@ export class Player {
     }
 
     this.rec.y = screenHeight - this.rec.h - 10
+  }
+
+  shoot() {
+    this.shooting = true
+  }
+
+  updateShooter(dt: number) {
+    if (this.shooting) {
+      this.shooting = false
+    }
+    if (this.keys.shoot.pressed && !this.reloading) {
+      this.shoot()
+      this.reloading = true
+    }
+
+    if (this.reloading) {
+      this.bTime += dt
+    }
+
+    if (this.bTime > this.reloadTime) {
+      this.reloading = false
+      this.bTime = 0
+    }
+  }
+
+  update(dt: number, screenWidth: number, screenHeight: number) {
+    this.handleInputs()
+    this.movePlayer(dt, screenWidth, screenHeight)
+    this.updateShooter(dt)
   }
 }

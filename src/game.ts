@@ -1,11 +1,11 @@
 import { Enemy } from "./game/enemies"
-import { Player } from "./game/player"
+import { Player, Rec } from "./game/player"
 
 interface Bullet {
+  id: number
+  r: number
   x: number
   y: number
-  r: number
-  active: boolean
 }
 
 export class Game {
@@ -14,11 +14,13 @@ export class Game {
   //enemies = Array() as Enemy[][]
   enemies: Enemy[][] = [[new Enemy]]
   pBullet: Bullet = {
+    id: 0,
+    r: 0,
     x: 0,
     y: 0,
-    r: 0,
-    active: false
   }
+
+  pBullets = new Map()
 
   time = 0
 
@@ -28,6 +30,19 @@ export class Game {
       y: this.player.rec.y = this.ctx.canvas.height - this.player.rec.h - 2,
       w: this.ctx.canvas.width / 15,
       h: this.ctx.canvas.height / 15,
+    }
+  }
+
+  initPlayerBullets() {
+    if (this.player.shooting) {
+
+      this.pBullet = {
+        id: this.pBullet.id + 1,
+        r: 5,
+        x: this.player.rec.x + this.player.rec.w / 2 - this.pBullet.r / 2,
+        y: this.player.rec.y,
+      }
+      this.pBullets.set(this.pBullet.id, this.pBullet)
     }
   }
 
@@ -66,29 +81,64 @@ export class Game {
   update(dt: number) {
     this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
     this.updateEnemies(dt)
-
-    if (this.player.shooting) {
-      this.pBullet = {
-        x: this.player.rec.x + this.player.rec.w / 2,
-        y: this.player.rec.y,
-        r: 5,
-        active: true
-      }
-      this.player.shooting = false
-    }
-
-    if (this.pBullet.active) {
-      this.pBullet.y -= 1000 * dt
-    }
-    console.log(this.pBullet.y)
+    this.updatePlayerBullets(dt)
+    this.handleCollisions()
 
     this.draw()
+  }
+
+  updatePlayerBullets(dt: number) {
+    if (this.player.shooting) {
+      this.initPlayerBullets()
+    }
+
+    for (let [id, bullet] of this.pBullets) {
+      bullet.y -= 1000 * dt
+
+      if (bullet.y < -5) {
+        //this.deleteBullet()
+        this.pBullets.delete(id)
+      }
+    }
   }
 
   updateEnemies(dt: number) {
     this.time += dt
     if (this.time > 1) {
       this.time = 0
+    }
+
+    for (let row of this.enemies) {
+      for (let e of row) {
+        if (!e.alive) {
+          e.rec = {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+          }
+        }
+      }
+    }
+  }
+
+  handleCollisions() {
+    for (let [id, bullet] of this.pBullets) {
+      for (let row of this.enemies) {
+        for (let e of row) {
+          let bulletRec: Rec = {
+            x: bullet.x,
+            y: bullet.y,
+            w: bullet.r,
+            h: bullet.r
+          }
+
+          if (doesItCrash(e.rec, bulletRec)) {
+            this.pBullets.delete(id)
+            e.alive = false
+          }
+        }
+      }
     }
   }
 
@@ -109,8 +159,8 @@ export class Game {
   }
 
   drawBullets() {
-    const { x, y, r, active } = this.pBullet
-    if (active) {
+    for (let [_, bullet] of this.pBullets) {
+      const { x, y, r } = bullet
       this.ctx.fillStyle = 'yellow'
       this.ctx.beginPath()
       this.ctx.rect(x, y, r, r)
@@ -119,15 +169,24 @@ export class Game {
   }
 
   drawEnemies() {
-    for (let row in this.enemies) {
-      for (let col in this.enemies[row]) {
-        const { x, y, w, h } = this.enemies[row][col].rec
-        this.ctx.fillStyle = 'red'
-        this.ctx.beginPath()
-        this.ctx.rect(x, y, w, h)
-        this.ctx.fill()
+    for (let row of this.enemies) {
+      for (let enemy of row) {
+        if (enemy.alive) {
+          const { x, y, w, h } = enemy.rec
+          this.ctx.fillStyle = 'red'
+          this.ctx.beginPath()
+          this.ctx.rect(x, y, w, h)
+          this.ctx.fill()
+        }
       }
     }
   }
 }
 
+function doesItCrash(rec1: Rec, rec2: Rec): boolean {
+  if ((rec1.y < rec2.y + rec2.h && rec1.y + rec1.h > rec2.y) && (rec1.x < rec2.x + rec2.w && rec1.x + rec1.w > rec2.x)) {
+    return true
+  }
+
+  return false
+}

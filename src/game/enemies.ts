@@ -7,4 +7,5 @@ export class Enemy {
     w: 0,
     h: 0
   }
+  alive: boolean = true
 }

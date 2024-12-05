@@ -9,4 +9,11 @@ export class Weapon {
   }
   weaponLock = false
   time = 0
+
+  constructor() {
+    this.pos.x = 0
+    this.pos.y = 0
+    this.weaponLock = false
+    this.time = 0
+  }
 }
