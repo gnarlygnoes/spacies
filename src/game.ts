@@ -10,9 +10,7 @@ interface Bullet {
 
 export class Game {
   player = new Player
-  //enemies: Enemy[][] = [[new Enemy]]
-  //enemies = Array() as Enemy[][]
-  enemies: Enemy[][] = [[new Enemy]]
+  enemies: Enemy[][] = [[]]
   pBullet: Bullet = {
     id: 0,
     r: 0,
@@ -25,6 +23,8 @@ export class Game {
   time = 0
   enemyDir = 1
   enemyDrop = false
+  enemyShootTimer = 2
+  curShootTime = 0
 
   initPlayer() {
     let w = this.ctx.canvas.width / 15
@@ -55,18 +55,23 @@ export class Game {
   }
 
   initEnemies() {
-    for (let i = 0; i < 5; i++) {
-      for (let j = 0; j < 10; j++) {
+    let rows = 5
+    let cols = 10
+    let alive = 0
+
+    for (let i = 1; i < rows; i++) {
+      this.enemies.push([])
+    }
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
         let e: Enemy = new Enemy
         e.rec.w = this.ctx.canvas.width / 16
         e.rec.h = this.ctx.canvas.height / 16
         e.rec.x = j * (e.rec.w + 10)
         e.rec.y = i * (e.rec.h + 10)
         this.enemies[i].push(e)
-        //this.enemies[i][j].rec.x = j
-        //this.enemies[i][j].rec.y = i
+        alive++
       }
-      this.enemies.push([new Enemy])
     }
   }
 
@@ -91,6 +96,7 @@ export class Game {
     this.updateEnemies(dt)
     this.updatePlayerBullets(dt)
     this.handleCollisions()
+    this.whoCanShoot()
 
     this.draw()
   }
@@ -112,11 +118,21 @@ export class Game {
 
   updateEnemies(dt: number) {
     this.time += dt
+    this.curShootTime += dt
     if (this.time > 1) {
       this.time = 0
       this.moveEnemies()
-
     }
+
+    if (this.curShootTime > this.enemyShootTimer) {
+      this.shoot()
+
+      this.enemyShootTimer = Math.random() * 2.0 + 1
+      console.log("New shoot timer: " + this.enemyShootTimer)
+      this.curShootTime = 0
+    }
+
+
     this.removeTheDead()
   }
 
@@ -155,10 +171,10 @@ export class Game {
         }
       }
     }
-    for (let row of this.enemies) {
-      for (let e of row) {
-        if (e.alive) {
-          if (e.rec.x < this.ctx.canvas.width / 32) {
+    for (let i = 0; i < this.enemies.length; i++) {
+      for (let j = 0; j < this.enemies[i].length; j++) {
+        if (this.enemies[i][j].alive) {
+          if (this.enemies[i][j].rec.x < this.ctx.canvas.width / 32) {
             this.enemyDir = 1
             this.enemyDrop = true
           }
@@ -182,6 +198,48 @@ export class Game {
             this.pBullets.delete(id)
             e.alive = false
           }
+        }
+      }
+    }
+  }
+
+  whoCanShoot() {
+    let rows = this.enemies.length
+    let cols = this.enemies[0].length
+
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        for (let k = 1; k < rows + 1; k++) {
+          if (this.enemies[rows - k][j].alive) {
+            this.enemies[rows - k][j].colour = 'blue'
+            this.enemies[rows - k][j].canShoot = true
+            break
+          }
+        }
+      }
+    }
+  }
+
+  shoot() {
+    let numCanShoot = 0
+    for (let row of this.enemies) {
+      for (let enemy of row) {
+        if (enemy.canShoot) {
+          numCanShoot++
+        }
+      }
+    }
+
+    let randNum = Math.floor(Math.random() * numCanShoot)
+
+    let counter = 0
+    for (let row of this.enemies) {
+      for (let enemy of row) {
+        if (enemy.canShoot) {
+          counter++
+        }
+        if (counter === randNum) {
+          console.log("Enemy at " + enemy.rec.x + " goes bang!")
         }
       }
     }
@@ -218,7 +276,7 @@ export class Game {
       for (let enemy of row) {
         if (enemy.alive) {
           const { x, y, w, h } = enemy.rec
-          this.ctx.fillStyle = 'red'
+          this.ctx.fillStyle = enemy.colour
           this.ctx.beginPath()
           this.ctx.rect(x, y, w, h)
           this.ctx.fill()

@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')!).render(<GameUI />)
 export type CurrentScreen = 'start' | 'game'
 
 function GameUI() {
-  const [screen, setScreen] = useState<CurrentScreen>('game')
+  const [screen, setScreen] = useState<CurrentScreen>('start')
 
   useEffect(() => {
     if (screen === 'game') {

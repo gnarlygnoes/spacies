@@ -8,4 +8,6 @@ export class Enemy {
     h: 0
   }
   alive: boolean = true
+  colour = 'red'
+  canShoot = false
 }
