@@ -1,24 +1,16 @@
 import { Enemy } from "./game/enemies"
 import { Player, Rec } from "./game/player"
-
-interface Bullet {
-  id: number
-  r: number
-  x: number
-  y: number
-}
+import { Bullet } from "./game/weapon"
 
 export class Game {
   player = new Player
   enemies: Enemy[][] = [[]]
-  pBullet: Bullet = {
-    id: 0,
-    r: 0,
-    x: 0,
-    y: 0,
-  }
+
+  pId = 0
+  eId = 0
 
   pBullets = new Map()
+  eBullets = new Map()
 
   time = 0
   enemyDir = 1
@@ -43,15 +35,26 @@ export class Game {
 
   initPlayerBullet() {
     if (this.player.shooting) {
-
-      this.pBullet = {
-        id: this.pBullet.id + 1,
-        r: 5,
-        x: this.player.rec.x + this.player.rec.w / 2 - this.pBullet.r / 2,
+      let r = 5
+      let bullet: Bullet = {
+        r,
+        x: this.player.rec.x + this.player.rec.w / 2 - r / 2,
         y: this.player.rec.y,
       }
-      this.pBullets.set(this.pBullet.id, this.pBullet)
+      this.pBullets.set(this.pId, bullet)
+      this.pId++
     }
+  }
+
+  initEnemyBullet(e: Enemy) {
+    let r = 4
+    let b: Bullet = {
+      r,
+      x: e.rec.x + e.rec.w / 2 - r / 2,
+      y: e.rec.y + e.rec.h
+    }
+    this.eBullets.set(this.eId, b)
+    this.eId++
   }
 
   initEnemies() {
@@ -114,6 +117,14 @@ export class Game {
         this.pBullets.delete(id)
       }
     }
+
+    for (let [id, bullet] of this.eBullets) {
+      bullet.y += 1000 * dt
+
+      if (bullet.y > this.ctx.canvas.height - 200) {
+        this.eBullets.delete(id)
+      }
+    }
   }
 
   updateEnemies(dt: number) {
@@ -146,6 +157,7 @@ export class Game {
             w: 0,
             h: 0
           }
+          e.canShoot = false
         }
       }
     }
@@ -239,7 +251,7 @@ export class Game {
           counter++
         }
         if (counter === randNum) {
-          console.log("Enemy at " + enemy.rec.x + " goes bang!")
+          this.initEnemyBullet(enemy)
         }
       }
     }
@@ -267,6 +279,14 @@ export class Game {
       this.ctx.fillStyle = 'yellow'
       this.ctx.beginPath()
       this.ctx.rect(x, y, r, r)
+      this.ctx.fill()
+    }
+
+    for (let [_, bullet] of this.eBullets) {
+      const { x, y, r } = bullet
+      this.ctx.fillStyle = 'lightgreen'
+      this.ctx.beginPath()
+      this.ctx.arc(x, y, r, 0, 2 * Math.PI)
       this.ctx.fill()
     }
   }

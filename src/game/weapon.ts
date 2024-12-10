@@ -2,6 +2,13 @@ interface Pos {
   x: number
   y: number
 }
+
+export interface Bullet {
+  r: number
+  x: number
+  y: number
+}
+
 export class Weapon {
   pos: Pos = {
     x: 0,
