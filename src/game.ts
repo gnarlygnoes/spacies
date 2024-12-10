@@ -47,7 +47,7 @@ export class Game {
   }
 
   initEnemyBullet(e: Enemy) {
-    let r = 4
+    let r = 3
     let b: Bullet = {
       r,
       x: e.rec.x + e.rec.w / 2 - r / 2,
@@ -121,7 +121,7 @@ export class Game {
     for (let [id, bullet] of this.eBullets) {
       bullet.y += 1000 * dt
 
-      if (bullet.y > this.ctx.canvas.height - 200) {
+      if (bullet.y > this.ctx.canvas.height + 5) {
         this.eBullets.delete(id)
       }
     }
@@ -247,12 +247,16 @@ export class Game {
     let counter = 0
     for (let row of this.enemies) {
       for (let enemy of row) {
+        //for (let i = 0; i < this.enemies.length; i++) {
+        //  for (let j = 0; j < this.enemies[i].length; j++) {
+        if (counter === randNum && enemy.canShoot) {
+          this.initEnemyBullet(enemy)
+          console.log(counter)
+        }
         if (enemy.canShoot) {
           counter++
         }
-        if (counter === randNum) {
-          this.initEnemyBullet(enemy)
-        }
+
       }
     }
   }
