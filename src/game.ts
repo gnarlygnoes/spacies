@@ -101,6 +101,10 @@ export class Game {
     this.handleCollisions()
     this.whoCanShoot()
 
+    if (this.player.health = 0) {
+      console.log("Game Over lmao")
+    }
+
     this.draw()
   }
 
@@ -211,6 +215,20 @@ export class Game {
             e.alive = false
           }
         }
+      }
+    }
+
+    for (let [id, bullet] of this.eBullets) {
+      let bulletRec: Rec = {
+        x: bullet.x,
+        y: bullet.y,
+        w: bullet.r,
+        h: bullet.r,
+      }
+
+      if (doesItCrash(this.player.rec, bulletRec)) {
+        this.eBullets.delete(id)
+        this.player.health--
       }
     }
   }

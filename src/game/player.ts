@@ -33,6 +33,8 @@ export class Player {
   bTime = 0
   reloadTime = .2
 
+  health = 3
+
   handleInputs() {
     window.addEventListener("keydown", (e) => {
       if (e.key === 'a') {
