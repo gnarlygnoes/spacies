@@ -22,17 +22,19 @@ export class Game {
   enemyShootTimer = 2
   curShootTime = 0
 
-
-  // Settings
+  // Settings and gamestate
   gamePaused = false
+  fireRate = 1
+  playerScore = 0
+  speed = 1
 
   initStars() {
     this.stars = StarField(this.ctx.canvas.width, this.ctx.canvas.height, 900)
   }
 
   initPlayer() {
-    let w = this.ctx.canvas.width / 15
-    let h = this.ctx.canvas.height / 15
+    let w = this.ctx.canvas.height / 17
+    let h = this.ctx.canvas.height / 17
     let x = this.ctx.canvas.width / 2 - w / 2
     let y = this.ctx.canvas.height - h - 2
 
@@ -62,8 +64,8 @@ export class Game {
     let rows = 5
     let cols = 10
     let alive = 0
-    let w = this.ctx.canvas.width / 16
-    let h = this.ctx.canvas.height / 16
+    let w = this.ctx.canvas.height / 17
+    let h = this.ctx.canvas.height / 17
 
     for (let i = 1; i < rows; i++) {
       this.enemies.push([])
@@ -120,6 +122,21 @@ export class Game {
     this.lastTime = time
   }
 
+  setSpeed() {
+    if (this.playerScore < 1000)
+      this.speed = 0.8
+    else if (this.playerScore >= 1000 && this.playerScore < 2000)
+      this.speed = .7
+    else if (this.playerScore >= 2000 && this.playerScore < 3000)
+      this.speed = .5
+    else if (this.playerScore >= 3000 && this.playerScore < 4000)
+      this.speed = .4
+    else if (this.playerScore >= 4000 && this.playerScore < 4900)
+      this.speed = .3
+    else if (this.playerScore >= 4900)
+      this.speed = .06
+  }
+
   update(dt: number) {
     if (!this.gamePaused) {
       this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
@@ -129,6 +146,7 @@ export class Game {
       this.whoCanShoot()
       this.updateDefences()
 
+      this.setSpeed()
       if (this.player.health = 0) {
         console.log("Game Over lmao")
       }
@@ -163,17 +181,15 @@ export class Game {
   updateEnemies(dt: number) {
     this.time += dt
     this.curShootTime += dt
-    if (this.time > 1) {
+    if (this.time > this.speed) {
       this.time = 0
-      //moveEnemies(this.enemies, this.ctx, this.enemyDir, this.enemyDrop)
       this.moveEnemies()
     }
 
     if (this.curShootTime > this.enemyShootTimer) {
       this.shoot()
 
-      this.enemyShootTimer = Math.random() * 2.0 + 1
-      console.log("New shoot timer: " + this.enemyShootTimer)
+      this.enemyShootTimer = (Math.random() * 2 + 2) * this.speed
       this.curShootTime = 0
     }
 
@@ -183,7 +199,7 @@ export class Game {
   moveEnemies() {
     for (let row of this.enemies) {
       for (let e of row) {
-        e.rec.x += this.ctx.canvas.width / 32 * this.enemyDir
+        e.rec.x += this.ctx.canvas.width / 64 * this.enemyDir
         if (this.enemyDrop) {
           e.rec.y += this.ctx.canvas.height / 32
         }
@@ -195,7 +211,8 @@ export class Game {
         if (this.enemies[i][j].alive) {
           if (this.enemies[i][j].rec.x + this.enemies[i][j].rec.w > this.ctx.canvas.width - this.ctx.canvas.width / 32) {
             this.enemyDir = -1
-            this.enemyDrop = true
+            if (this.enemies[i][j].canShoot && this.enemies[i][j].rec.y < this.ctx.canvas.height - this.ctx.canvas.height / 3 - this.enemies[i][j].rec.h)
+              this.enemyDrop = true
           }
         }
       }
@@ -205,7 +222,8 @@ export class Game {
         if (this.enemies[i][j].alive) {
           if (this.enemies[i][j].rec.x < this.ctx.canvas.width / 32) {
             this.enemyDir = 1
-            this.enemyDrop = true
+            if (this.enemies[i][j].canShoot && this.enemies[i][j].rec.y < this.ctx.canvas.height - this.ctx.canvas.height / 3 - this.enemies[i][j].rec.h)
+              this.enemyDrop = true
           }
         }
       }
@@ -235,6 +253,7 @@ export class Game {
           if (doesItCrash(e.rec, bulletRec)) {
             this.pBullets.delete(id)
             e.alive = false
+            this.playerScore += 100
           }
         }
       }
@@ -279,6 +298,9 @@ export class Game {
             this.enemies[rows - k][j].colour = 'blue'
             this.enemies[rows - k][j].canShoot = true
             break
+          }
+          if (!this.enemies[rows - k][j].alive) {
+            this.enemies[rows - k][j].canShoot = false
           }
         }
       }
