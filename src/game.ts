@@ -1,5 +1,5 @@
 import { Star, StarField } from "./game/background"
-import { Enemy } from "./game/enemies"
+import { Enemy, makeEnemy, moveEnemies, removeTheDead } from "./game/enemies"
 import { Player, Rec } from "./game/player"
 import { Bullet } from "./game/weapon"
 
@@ -71,17 +71,15 @@ export class Game {
     let rows = 5
     let cols = 10
     let alive = 0
+    let w = this.ctx.canvas.width / 16
+    let h = this.ctx.canvas.height / 16
 
     for (let i = 1; i < rows; i++) {
       this.enemies.push([])
     }
     for (let i = 0; i < rows; i++) {
       for (let j = 0; j < cols; j++) {
-        let e: Enemy = new Enemy
-        e.rec.w = this.ctx.canvas.width / 16
-        e.rec.h = this.ctx.canvas.height / 16
-        e.rec.x = j * (e.rec.w + 10)
-        e.rec.y = i * (e.rec.h + 10)
+        let e: Enemy = makeEnemy(j * (w + 10), i * (h + 10), w, h)
         this.enemies[i].push(e)
         alive++
       }
@@ -109,7 +107,7 @@ export class Game {
     if (!this.gamePaused) {
       this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
       this.updateEnemies(dt)
-      this.updatePlayerBullets(dt)
+      this.updateBullets(dt)
       this.handleCollisions()
       this.whoCanShoot()
 
@@ -121,13 +119,13 @@ export class Game {
     this.draw()
   }
 
-  updatePlayerBullets(dt: number) {
+  updateBullets(dt: number) {
     if (this.player.shooting) {
       this.initPlayerBullet()
     }
 
     for (let [id, bullet] of this.pBullets) {
-      bullet.y -= 1000 * dt
+      bullet.y -= this.ctx.canvas.height * dt
 
       if (bullet.y < -5) {
         //this.deleteBullet()
@@ -136,7 +134,7 @@ export class Game {
     }
 
     for (let [id, bullet] of this.eBullets) {
-      bullet.y += 1000 * dt
+      bullet.y += this.ctx.canvas.height * dt
 
       if (bullet.y > this.ctx.canvas.height + 5) {
         this.eBullets.delete(id)
@@ -149,6 +147,7 @@ export class Game {
     this.curShootTime += dt
     if (this.time > 1) {
       this.time = 0
+      //moveEnemies(this.enemies, this.ctx, this.enemyDir, this.enemyDrop)
       this.moveEnemies()
     }
 
@@ -161,7 +160,7 @@ export class Game {
     }
 
 
-    this.removeTheDead()
+    removeTheDead(this.enemies)
   }
 
   removeTheDead() {
@@ -305,8 +304,8 @@ export class Game {
 
     for (let star of this.stars) {
       this.ctx.fillStyle = `rgb(${star.colour.r}
-${star.colour.g}
-${star.colour.b}`
+                                ${star.colour.g}
+                                ${star.colour.b}`
       this.ctx.beginPath()
       this.ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI)
       this.ctx.fill()
