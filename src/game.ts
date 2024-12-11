@@ -1,8 +1,10 @@
+import { Star, StarField } from "./game/background"
 import { Enemy } from "./game/enemies"
 import { Player, Rec } from "./game/player"
 import { Bullet } from "./game/weapon"
 
 export class Game {
+  stars: Star[] = []
   player = new Player
   enemies: Enemy[][] = [[]]
 
@@ -17,6 +19,14 @@ export class Game {
   enemyDrop = false
   enemyShootTimer = 2
   curShootTime = 0
+
+
+  // Settings
+  gamePaused = false
+
+  initStars() {
+    this.stars = StarField(this.ctx.canvas.width, this.ctx.canvas.height, 900)
+  }
 
   initPlayer() {
     let w = this.ctx.canvas.width / 15
@@ -79,6 +89,7 @@ export class Game {
   }
 
   constructor(public ctx: CanvasRenderingContext2D) {
+    this.initStars()
     this.initPlayer()
     this.initEnemies()
   }
@@ -95,14 +106,16 @@ export class Game {
   }
 
   update(dt: number) {
-    this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
-    this.updateEnemies(dt)
-    this.updatePlayerBullets(dt)
-    this.handleCollisions()
-    this.whoCanShoot()
+    if (!this.gamePaused) {
+      this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
+      this.updateEnemies(dt)
+      this.updatePlayerBullets(dt)
+      this.handleCollisions()
+      this.whoCanShoot()
 
-    if (this.player.health = 0) {
-      console.log("Game Over lmao")
+      if (this.player.health = 0) {
+        console.log("Game Over lmao")
+      }
     }
 
     this.draw()
@@ -281,10 +294,23 @@ export class Game {
 
   draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    this.drawStars()
 
     this.drawPlayer()
     this.drawEnemies()
     this.drawBullets()
+  }
+
+  drawStars() {
+
+    for (let star of this.stars) {
+      this.ctx.fillStyle = `rgb(${star.colour.r}
+${star.colour.g}
+${star.colour.b}`
+      this.ctx.beginPath()
+      this.ctx.arc(star.x, star.y, star.r, 0, 2 * Math.PI)
+      this.ctx.fill()
+    }
   }
 
   drawPlayer() {
