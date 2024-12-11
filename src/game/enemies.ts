@@ -14,7 +14,7 @@ import { Rec } from "./player";
 
 
 
-interface Enemy {
+export interface Enemy {
   rec: Rec
   alive: boolean
   colour: string

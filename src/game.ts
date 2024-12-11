@@ -1,5 +1,6 @@
 import { Star, StarField } from "./game/background"
-import { Enemy, makeEnemy, moveEnemies, removeTheDead } from "./game/enemies"
+import { Defence, makeDefence } from "./game/defence"
+import { Enemy, makeEnemy, removeTheDead } from "./game/enemies"
 import { Player, Rec } from "./game/player"
 import { Bullet } from "./game/weapon"
 
@@ -7,12 +8,13 @@ export class Game {
   stars: Star[] = []
   player = new Player
   enemies: Enemy[][] = [[]]
-
-  pId = 0
-  eId = 0
+  defences = new Map()
+  defId = 0
 
   pBullets = new Map()
   eBullets = new Map()
+  pId = 0
+  eId = 0
 
   time = 0
   enemyDir = 1
@@ -56,17 +58,6 @@ export class Game {
     }
   }
 
-  initEnemyBullet(e: Enemy) {
-    let r = 3
-    let b: Bullet = {
-      r,
-      x: e.rec.x + e.rec.w / 2 - r / 2,
-      y: e.rec.y + e.rec.h
-    }
-    this.eBullets.set(this.eId, b)
-    this.eId++
-  }
-
   initEnemies() {
     let rows = 5
     let cols = 10
@@ -86,10 +77,36 @@ export class Game {
     }
   }
 
+  initEnemyBullet(e: Enemy) {
+    let r = 3
+    let b: Bullet = {
+      r,
+      x: e.rec.x + e.rec.w / 2 - r / 2,
+      y: e.rec.y + e.rec.h
+    }
+    this.eBullets.set(this.eId, b)
+    this.eId++
+  }
+
+  initDefences() {
+    let w = this.ctx.canvas.width / 8
+    let h = this.ctx.canvas.width / 8
+    let y = this.ctx.canvas.height - this.ctx.canvas.height / 4
+
+    for (let i = 0; i < 4; i++) {
+      const defence: Defence = makeDefence((2 * i * w) + 30, y, w, h)
+      this.defences.set(this.defId, defence)
+      this.defId++
+
+      //this.defences.push(makeDefence((2 * i * w) + 30, y, w, h))
+    }
+  }
+
   constructor(public ctx: CanvasRenderingContext2D) {
     this.initStars()
     this.initPlayer()
     this.initEnemies()
+    this.initDefences()
   }
 
   initGame() {
@@ -110,6 +127,7 @@ export class Game {
       this.updateBullets(dt)
       this.handleCollisions()
       this.whoCanShoot()
+      this.updateDefences()
 
       if (this.player.health = 0) {
         console.log("Game Over lmao")
@@ -159,24 +177,7 @@ export class Game {
       this.curShootTime = 0
     }
 
-
     removeTheDead(this.enemies)
-  }
-
-  removeTheDead() {
-    for (let row of this.enemies) {
-      for (let e of row) {
-        if (!e.alive) {
-          e.rec = {
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0
-          }
-          e.canShoot = false
-        }
-      }
-    }
   }
 
   moveEnemies() {
@@ -211,21 +212,36 @@ export class Game {
     }
   }
 
+  updateDefences() {
+    for (let [id, defence] of this.defences) {
+      if (defence.health <= 0) {
+        this.defences.delete(id)
+      }
+    }
+  }
+
   handleCollisions() {
     for (let [id, bullet] of this.pBullets) {
+      let bulletRec: Rec = {
+        x: bullet.x,
+        y: bullet.y,
+        w: bullet.r,
+        h: bullet.r
+      }
       for (let row of this.enemies) {
         for (let e of row) {
-          let bulletRec: Rec = {
-            x: bullet.x,
-            y: bullet.y,
-            w: bullet.r,
-            h: bullet.r
-          }
+
 
           if (doesItCrash(e.rec, bulletRec)) {
             this.pBullets.delete(id)
             e.alive = false
           }
+        }
+      }
+      for (let [_, defence] of this.defences) {
+        if (doesItCrash(defence.rec, bulletRec)) {
+          this.pBullets.delete(id)
+          defence.health--
         }
       }
     }
@@ -241,6 +257,13 @@ export class Game {
       if (doesItCrash(this.player.rec, bulletRec)) {
         this.eBullets.delete(id)
         this.player.health--
+      }
+
+      for (let [_, defence] of this.defences) {
+        if (doesItCrash(defence.rec, bulletRec)) {
+          this.eBullets.delete(id)
+          defence.health--
+        }
       }
     }
   }
@@ -277,8 +300,6 @@ export class Game {
     let counter = 0
     for (let row of this.enemies) {
       for (let enemy of row) {
-        //for (let i = 0; i < this.enemies.length; i++) {
-        //  for (let j = 0; j < this.enemies[i].length; j++) {
         if (counter === randNum && enemy.canShoot) {
           this.initEnemyBullet(enemy)
           console.log(counter)
@@ -297,6 +318,8 @@ export class Game {
 
     this.drawPlayer()
     this.drawEnemies()
+    this.drawDefences()
+
     this.drawBullets()
   }
 
@@ -348,6 +371,18 @@ export class Game {
           this.ctx.rect(x, y, w, h)
           this.ctx.fill()
         }
+      }
+    }
+  }
+
+  drawDefences() {
+    for (let [_, defence] of this.defences) {
+      if (defence.alive) {
+        const { x, y, w, h } = defence.rec
+        this.ctx.fillStyle = 'grey'
+        this.ctx.beginPath()
+        this.ctx.rect(x, y, w, h)
+        this.ctx.fill()
       }
     }
   }
