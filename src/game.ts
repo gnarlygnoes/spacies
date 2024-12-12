@@ -1,6 +1,7 @@
 import { Star, StarField } from "./game/background"
 import { Defence, makeDefence } from "./game/defence"
 import { Enemy, makeEnemy, removeTheDead } from "./game/enemies"
+import { GameState } from "./game/gamestate"
 import { Player, Rec } from "./game/player"
 import { Bullet } from "./game/weapon"
 
@@ -34,10 +35,12 @@ export class Game {
   curShootTime = 0
 
   // Settings and gamestate
-  gamePaused = false
+  gamestate = GameState.Active
   fireRate = 1
   playerScore = 0
   speed = 1
+  bulletBuffer = 6
+  onScreenBullets = 0
 
   loadTexture() {
     this.gameTexture.src = '/src/img/SpaceInvaders.png'
@@ -118,8 +121,6 @@ export class Game {
     let h = this.ctx.canvas.width / 12
     let y = this.ctx.canvas.height - this.ctx.canvas.height / 4
 
-    console.log(this.ctx.canvas.width)
-
     for (let i = 0; i < 4; i++) {
       const defence: Defence = makeDefence((1.5 * i * w) + (35 / 854) * this.ctx.canvas.width, y, w, h)
       this.defences.set(this.defId, defence)
@@ -164,7 +165,7 @@ export class Game {
   }
 
   update(dt: number) {
-    if (!this.gamePaused) {
+    if (this.gamestate === GameState.Active) {
       this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
       this.updateEnemies(dt)
       this.updateBullets(dt)
@@ -173,7 +174,7 @@ export class Game {
       this.updateDefences()
 
       this.setSpeed()
-      if (this.player.health = 0) {
+      if (this.player.health === 0) {
         console.log("Game Over lmao")
       }
     }

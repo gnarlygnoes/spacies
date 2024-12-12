@@ -31,7 +31,7 @@ export class Player {
   shooting = false
   reloading = false
   bTime = 0
-  reloadTime = .2
+  reloadTime = .6
 
   health = 3
 
