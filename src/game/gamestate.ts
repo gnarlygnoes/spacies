@@ -5,9 +5,9 @@ export enum GameState {
   'Defeated'
 }
 
-function gamePaused() {
-}
-
-function winScreen() { }
-
-function loseScreen() { }
+//function gamePaused() {
+//}
+//
+//function winScreen() { }
+//
+//function loseScreen() { }

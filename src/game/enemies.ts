@@ -1,4 +1,4 @@
-import { Direction, Rec } from "./player";
+import { Rec } from "./player";
 
 //export class Enemy {
 //  rec: Rec = {

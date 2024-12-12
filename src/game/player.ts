@@ -1,10 +1,9 @@
-import { Weapon } from "./weapon"
 
 export interface Rec {
   x: number, y: number, w: number, h: number
 }
 
-export type Direction = 'left' | 'right' | 'none'
+type Direction = 'left' | 'right' | 'none'
 
 export class Player {
   rec: Rec = {

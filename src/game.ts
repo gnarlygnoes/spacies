@@ -43,7 +43,7 @@ export class Game {
   onScreenBullets = 0
 
   loadTexture() {
-    this.gameTexture.src = '/src/img/SpaceInvaders.png'
+    this.gameTexture.src = './img/SpaceInvaders.png'
 
     this.shift = 0
     this.frameWidth = 16
@@ -432,8 +432,6 @@ export class Game {
   }
 
   drawEnemies() {
-    //for (let row of this.enemies) {
-    //  for (let enemy of row) {
     for (let i = 0; i < this.enemies.length; i++) {
       for (let j = 0; j < this.enemies[i].length; j++) {
         if (this.enemies[i][j].alive) {
