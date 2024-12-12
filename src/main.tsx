@@ -30,13 +30,10 @@ function GameUI() {
     //<StrictMode>
     //  <App />
     //</StrictMode>
-    <div className='main'>
-      <div className="canvas-container">
-        <canvas id="canvas" />
-      </div>
-      <div className='game-info'>
-        <p>Hello</p>
-      </div>
+    //<div className='main'>
+    <div className="canvas-container">
+      <canvas id="canvas" />
     </div>
+    //</div>
   )
 }

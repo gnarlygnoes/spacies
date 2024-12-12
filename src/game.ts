@@ -5,6 +5,13 @@ import { Player, Rec } from "./game/player"
 import { Bullet } from "./game/weapon"
 
 export class Game {
+  gameTexture = new Image
+  shift = 0
+  frameWidth = 0
+  frameHeight = 0
+  totalFrames = 0
+  currentFrame = 0
+
   stars: Star[] = []
   player = new Player
   enemies: Enemy[][] = [[]]
@@ -17,6 +24,10 @@ export class Game {
   eId = 0
 
   time = 0
+  animTime = .5
+  curAnimTime = 0
+  state = true
+
   enemyDir = 1
   enemyDrop = false
   enemyShootTimer = 2
@@ -27,6 +38,18 @@ export class Game {
   fireRate = 1
   playerScore = 0
   speed = 1
+
+  loadTexture() {
+    this.gameTexture.src = '/src/img/SpaceInvaders.png'
+
+    this.shift = 0
+    this.frameWidth = 16
+    this.frameHeight = 16
+    this.totalFrames = 35
+    this.currentFrame = 0
+  }
+
+
 
   initStars() {
     this.stars = StarField(this.ctx.canvas.width, this.ctx.canvas.height, 900)
@@ -91,12 +114,14 @@ export class Game {
   }
 
   initDefences() {
-    let w = this.ctx.canvas.width / 8
-    let h = this.ctx.canvas.width / 8
+    let w = this.ctx.canvas.width / 6
+    let h = this.ctx.canvas.width / 12
     let y = this.ctx.canvas.height - this.ctx.canvas.height / 4
 
+    console.log(this.ctx.canvas.width)
+
     for (let i = 0; i < 4; i++) {
-      const defence: Defence = makeDefence((2 * i * w) + 30, y, w, h)
+      const defence: Defence = makeDefence((1.5 * i * w) + (35 / 854) * this.ctx.canvas.width, y, w, h)
       this.defences.set(this.defId, defence)
       this.defId++
 
@@ -105,6 +130,7 @@ export class Game {
   }
 
   constructor(public ctx: CanvasRenderingContext2D) {
+    this.loadTexture()
     this.initStars()
     this.initPlayer()
     this.initEnemies()
@@ -181,6 +207,16 @@ export class Game {
   updateEnemies(dt: number) {
     this.time += dt
     this.curShootTime += dt
+    this.curAnimTime += dt
+    if (this.curAnimTime >= this.animTime) {
+      if (this.state) {
+        this.state = false
+      } else {
+        this.state = true
+      }
+
+      this.curAnimTime = 0
+    }
     if (this.time > this.speed) {
       this.time = 0
       this.moveEnemies()
@@ -324,7 +360,6 @@ export class Game {
       for (let enemy of row) {
         if (counter === randNum && enemy.canShoot) {
           this.initEnemyBullet(enemy)
-          console.log(counter)
         }
         if (enemy.canShoot) {
           counter++
@@ -343,6 +378,15 @@ export class Game {
     this.drawDefences()
 
     this.drawBullets()
+
+  }
+
+  drawFrame(sx: number, sy: number, rec: Rec) {
+    this.ctx.drawImage(this.gameTexture, sx * 16, sy * 16, 16, 16, rec.x, rec.y, rec.w, rec.h)
+  }
+
+  drawDefence(sy: number, rec: Rec) {
+    this.ctx.drawImage(this.gameTexture, 48, sy * 16, 32, 16, rec.x, rec.y, rec.w, rec.h)
   }
 
   drawStars() {
@@ -358,11 +402,14 @@ export class Game {
   }
 
   drawPlayer() {
-    const { x, y, w, h } = this.player.rec
-    this.ctx.fillStyle = 'darkgreen'
-    this.ctx.beginPath()
-    this.ctx.rect(x, y, w, h)
-    this.ctx.fill()
+    //const { x, y, w, h } = this.player.rec
+
+    this.drawFrame(4, 0, this.player.rec)
+
+    //this.ctx.fillStyle = 'darkgreen'
+    //this.ctx.beginPath()
+    //this.ctx.rect(x, y, w, h)
+    //this.ctx.fill()
   }
 
   drawBullets() {
@@ -384,14 +431,20 @@ export class Game {
   }
 
   drawEnemies() {
-    for (let row of this.enemies) {
-      for (let enemy of row) {
-        if (enemy.alive) {
-          const { x, y, w, h } = enemy.rec
-          this.ctx.fillStyle = enemy.colour
-          this.ctx.beginPath()
-          this.ctx.rect(x, y, w, h)
-          this.ctx.fill()
+    //for (let row of this.enemies) {
+    //  for (let enemy of row) {
+    for (let i = 0; i < this.enemies.length; i++) {
+      for (let j = 0; j < this.enemies[i].length; j++) {
+        if (this.enemies[i][j].alive) {
+          if (this.state)
+            this.drawFrame(0, i, this.enemies[i][j].rec)
+          else
+            this.drawFrame(1, i, this.enemies[i][j].rec)
+          //const { x, y, w, h } = enemy.rec
+          //this.ctx.fillStyle = enemy.colour
+          //this.ctx.beginPath()
+          //this.ctx.rect(x, y, w, h)
+          //this.ctx.fill()
         }
       }
     }
@@ -400,11 +453,21 @@ export class Game {
   drawDefences() {
     for (let [_, defence] of this.defences) {
       if (defence.alive) {
-        const { x, y, w, h } = defence.rec
-        this.ctx.fillStyle = 'grey'
-        this.ctx.beginPath()
-        this.ctx.rect(x, y, w, h)
-        this.ctx.fill()
+        if (defence.health >= 8) {
+          this.drawDefence(1, defence.rec)
+        } else if (defence.health >= 6 && defence.health < 8) {
+          this.drawDefence(2, defence.rec)
+        } else if (defence.health >= 4 && defence.health < 6) {
+          this.drawDefence(3, defence.rec)
+        } else if (defence.health >= 2 && defence.health < 4) {
+          this.drawDefence(4, defence.rec)
+        }
+
+        //const { x, y, w, h } = defence.rec
+        //this.ctx.fillStyle = 'grey'
+        //this.ctx.beginPath()
+        //this.ctx.rect(x, y, w, h)
+        //this.ctx.fill()
       }
     }
   }
