@@ -3,6 +3,7 @@ import { Defence, makeDefence } from "./game/defence"
 import { Enemy, makeEnemy, removeTheDead } from "./game/enemies"
 import { GameState } from "./game/gamestate"
 import { Player, Rec } from "./game/player"
+import { Settings } from "./game/settings"
 import { Bullet } from "./game/weapon"
 
 export class Game {
@@ -12,6 +13,8 @@ export class Game {
   frameHeight = 0
   totalFrames = 0
   currentFrame = 0
+
+  settings: Settings = new Settings
 
   stars: Star[] = []
   player = new Player
@@ -51,8 +54,6 @@ export class Game {
     this.totalFrames = 35
     this.currentFrame = 0
   }
-
-
 
   initStars() {
     this.stars = StarField(this.ctx.canvas.width, this.ctx.canvas.height, 900)
@@ -166,7 +167,8 @@ export class Game {
 
   update(dt: number) {
     if (this.gamestate === GameState.Active) {
-      this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height)
+      this.settings.handleInputs()
+      this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height, this.settings)
       this.updateEnemies(dt)
       this.updateBullets(dt)
       this.handleCollisions()

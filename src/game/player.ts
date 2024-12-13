@@ -1,3 +1,4 @@
+import { Settings } from "./settings"
 
 export interface Rec {
   x: number, y: number, w: number, h: number
@@ -15,67 +16,29 @@ export class Player {
 
   dir: Direction = "none"
 
-  keys = {
-    left: {
-      pressed: false
-    },
-    right: {
-      pressed: false
-    },
-    shoot: {
-      pressed: false
-    }
-  }
-
   shooting = false
   reloading = false
-  bTime = 0
+  curReloadTime = 0
   reloadTime = .6
 
   health = 3
 
-  handleInputs() {
-    window.addEventListener("keydown", (e) => {
-      if (e.key === 'a') {
-        this.keys.left.pressed = true
-      }
-      else if (e.key === 'd') {
-        this.keys.right.pressed = true
-      }
-      if (e.key === ' ') {
-        this.keys.shoot.pressed = true
-      }
 
-      //console.log(e)
-    })
 
-    window.addEventListener("keyup", (e) => {
-      if (e.key === 'a') {
-        this.keys.left.pressed = false
-      }
-      if (e.key === 'd') {
-        this.keys.right.pressed = false
-      }
-      if (e.key === ' ') {
-        this.keys.shoot.pressed = false
-      }
-    })
-  }
-
-  movePlayer(dt: number, screenWidth: number, screenHeight: number) {
-    if (this.keys.left.pressed) {
+  movePlayer(dt: number, screenWidth: number, screenHeight: number, settings: Settings) {
+    if (settings.keys.left.pressed) {
       this.dir = 'left'
-    } else if (this.keys.right.pressed) {
+    } else if (settings.keys.right.pressed) {
       this.dir = 'right'
     } else {
       this.dir = 'none'
     }
 
     if (this.dir === 'right') {
-      this.rec.x += (screenWidth * 1.25) * dt
+      this.rec.x += (screenWidth) * dt
     }
     if (this.dir === 'left') {
-      this.rec.x -= (screenWidth * 1.25) * dt
+      this.rec.x -= (screenWidth) * dt
     }
 
     if (this.rec.x + this.rec.w > screenWidth) {
@@ -92,28 +55,27 @@ export class Player {
     this.shooting = true
   }
 
-  updateShooter(dt: number) {
+  updateShooter(dt: number, settings: Settings) {
     if (this.shooting) {
       this.shooting = false
     }
-    if (this.keys.shoot.pressed && !this.reloading) {
+    if (settings.keys.shoot.pressed && !this.reloading) {
       this.shoot()
       this.reloading = true
     }
 
     if (this.reloading) {
-      this.bTime += dt
+      this.curReloadTime += dt
     }
 
-    if (this.bTime > this.reloadTime) {
+    if (this.curReloadTime > this.reloadTime) {
       this.reloading = false
-      this.bTime = 0
+      this.curReloadTime = 0
     }
   }
 
-  update(dt: number, screenWidth: number, screenHeight: number) {
-    this.handleInputs()
-    this.movePlayer(dt, screenWidth, screenHeight)
-    this.updateShooter(dt)
+  update(dt: number, screenWidth: number, screenHeight: number, settings: Settings) {
+    this.movePlayer(dt, screenWidth, screenHeight, settings)
+    this.updateShooter(dt, settings)
   }
 }
