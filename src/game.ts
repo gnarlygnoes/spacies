@@ -126,8 +126,6 @@ export class Game {
       const defence: Defence = makeDefence((1.5 * i * w) + (35 / 854) * this.ctx.canvas.width, y, w, h)
       this.defences.set(this.defId, defence)
       this.defId++
-
-      //this.defences.push(makeDefence((2 * i * w) + 30, y, w, h))
     }
   }
 
@@ -158,16 +156,28 @@ export class Game {
     else if (this.playerScore >= 2000 && this.playerScore < 3000)
       this.speed = .5
     else if (this.playerScore >= 3000 && this.playerScore < 4000)
-      this.speed = .4
+      this.speed = .35
     else if (this.playerScore >= 4000 && this.playerScore < 4900)
-      this.speed = .3
+      this.speed = .2
     else if (this.playerScore >= 4900)
       this.speed = .06
   }
 
   update(dt: number) {
+    this.settings.handleInputs()
+
+    if (this.gamestate === GameState.Paused) {
+      if (!this.settings.keys.pause.active) {
+        this.gamestate = GameState.Active
+      }
+    }
+    console.log(this.gamestate)
+
+
     if (this.gamestate === GameState.Active) {
-      this.settings.handleInputs()
+      if (this.settings.keys.pause.active) {
+        this.gamestate = GameState.Paused
+      }
       this.player.update(dt, this.ctx.canvas.width, this.ctx.canvas.height, this.settings)
       this.updateEnemies(dt)
       this.updateBullets(dt)
@@ -176,9 +186,6 @@ export class Game {
       this.updateDefences()
 
       this.setSpeed()
-      if (this.player.health === 0) {
-        console.log("Game Over lmao")
-      }
     }
 
     this.draw()
@@ -405,14 +412,7 @@ export class Game {
   }
 
   drawPlayer() {
-    //const { x, y, w, h } = this.player.rec
-
     this.drawFrame(4, 0, this.player.rec)
-
-    //this.ctx.fillStyle = 'darkgreen'
-    //this.ctx.beginPath()
-    //this.ctx.rect(x, y, w, h)
-    //this.ctx.fill()
   }
 
   drawBullets() {
@@ -441,11 +441,6 @@ export class Game {
             this.drawFrame(0, i, this.enemies[i][j].rec)
           else
             this.drawFrame(1, i, this.enemies[i][j].rec)
-          //const { x, y, w, h } = enemy.rec
-          //this.ctx.fillStyle = enemy.colour
-          //this.ctx.beginPath()
-          //this.ctx.rect(x, y, w, h)
-          //this.ctx.fill()
         }
       }
     }
@@ -463,12 +458,6 @@ export class Game {
         } else if (defence.health >= 2 && defence.health < 4) {
           this.drawDefence(4, defence.rec)
         }
-
-        //const { x, y, w, h } = defence.rec
-        //this.ctx.fillStyle = 'grey'
-        //this.ctx.beginPath()
-        //this.ctx.rect(x, y, w, h)
-        //this.ctx.fill()
       }
     }
   }
