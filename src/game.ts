@@ -200,7 +200,6 @@ export class Game {
       bullet.y -= this.ctx.canvas.height * dt
 
       if (bullet.y < -5) {
-        //this.deleteBullet()
         this.pBullets.delete(id)
       }
     }
@@ -303,7 +302,7 @@ export class Game {
           }
         }
       }
-      for (let [_, defence] of this.defences) {
+      for (let defence of this.defences.values()) {
         if (doesItCrash(defence.rec, bulletRec)) {
           this.pBullets.delete(id)
           defence.health--
@@ -324,7 +323,7 @@ export class Game {
         this.player.health--
       }
 
-      for (let [_, defence] of this.defences) {
+      for (let defence of this.defences.values()) {
         if (doesItCrash(defence.rec, bulletRec)) {
           this.eBullets.delete(id)
           defence.health--
@@ -416,7 +415,7 @@ export class Game {
   }
 
   drawBullets() {
-    for (let [_, bullet] of this.pBullets) {
+    for (let bullet of this.pBullets.values()) {
       const { x, y, r } = bullet
       this.ctx.fillStyle = 'yellow'
       this.ctx.beginPath()
@@ -424,7 +423,7 @@ export class Game {
       this.ctx.fill()
     }
 
-    for (let [_, bullet] of this.eBullets) {
+    for (let bullet of this.eBullets.values()) {
       const { x, y, r } = bullet
       this.ctx.fillStyle = 'lightgreen'
       this.ctx.beginPath()
@@ -447,7 +446,7 @@ export class Game {
   }
 
   drawDefences() {
-    for (let [_, defence] of this.defences) {
+    for (let defence of this.defences.values()) {
       if (defence.alive) {
         if (defence.health >= 8) {
           this.drawDefence(1, defence.rec)
