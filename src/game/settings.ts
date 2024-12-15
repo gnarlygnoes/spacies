@@ -22,16 +22,16 @@ export class Settings {
 
   handleInputs() {
     window.addEventListener("keydown", (e) => {
-      if (e.key === this.moveLeft) {
+      if (e.key === this.moveLeft || e.key === 'ArrowLeft') {
         this.keys.left.pressed = true
       }
-      else if (e.key === this.moveRight) {
+      else if (e.key === this.moveRight || e.key === 'ArrowRight') {
         this.keys.right.pressed = true
       }
       if (e.key === this.shoot) {
         this.keys.shoot.pressed = true
       }
-      //console.log(e)
+      console.log(e)
     })
 
     window.addEventListener("keypress", (e) => {
@@ -48,10 +48,10 @@ export class Settings {
     })
 
     window.addEventListener("keyup", (e) => {
-      if (e.key === this.moveLeft) {
+      if (e.key === this.moveLeft || e.key === 'ArrowLeft') {
         this.keys.left.pressed = false
       }
-      if (e.key === this.moveRight) {
+      if (e.key === this.moveRight || e.key === 'ArrowRight') {
         this.keys.right.pressed = false
       }
       if (e.key === this.shoot) {
