@@ -164,14 +164,11 @@ export class Game {
   }
 
   update(dt: number) {
-    this.settings.handleInputs()
-
     if (this.gamestate === GameState.Paused) {
       if (!this.settings.keys.pause.active) {
         this.gamestate = GameState.Active
       }
     }
-    console.log(this.gamestate)
 
 
     if (this.gamestate === GameState.Active) {

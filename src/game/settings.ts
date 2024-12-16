@@ -20,8 +20,8 @@ export class Settings {
   pause = 'p'
   unpause = 'Enter'
 
-  handleInputs() {
-    window.addEventListener("keydown", (e) => {
+  constructor() {
+    window.addEventListener("keypress", (e) => {
       if (e.key === this.moveLeft || e.key === 'ArrowLeft') {
         this.keys.left.pressed = true
       }
