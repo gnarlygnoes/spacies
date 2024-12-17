@@ -377,6 +377,8 @@ export class Game {
 
   draw() {
     this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height)
+    //this.ctx.fillStyle = 'black'
+    //this.ctx.fill()
     this.drawStars()
 
     this.drawPlayer()

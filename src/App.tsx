@@ -8,11 +8,11 @@ function App(props: { setScreen: (screen: CurrentScreen) => void }) {
     <main>
       <h1>Welcome to Spacies!</h1>
       <div className='menu'>
-        <button onClick={() => {
+        <button className='menu-button' onClick={() => {
           setScreen('game')
         }}>Click me to start the game!</button>
 
-        <button>Change Settings</button>
+        <button className='menu-button'>Change Settings</button>
       </div>
     </main>
   )
