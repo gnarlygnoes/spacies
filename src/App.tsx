@@ -1,7 +1,7 @@
 import './App.css'
 import { CurrentScreen } from './main'
 
-function App(props: { setScreen: (screen: CurrentScreen) => void }) {
+function Menu(props: { setScreen: (screen: CurrentScreen) => void }) {
   const { setScreen } = props
 
   return (
@@ -13,9 +13,11 @@ function App(props: { setScreen: (screen: CurrentScreen) => void }) {
         }}>Click me to start the game!</button>
 
         <button className='menu-button'>Change Settings</button>
+
+        <button className='menu-button'>Load Previous Game</button>
       </div>
     </main>
   )
 }
 
-export default App
+export default Menu

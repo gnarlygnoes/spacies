@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import Menu from './App.tsx'
 import { initAndGetCanvas } from './canvas.ts'
 import { Game } from './game.ts'
 import Settings from './settings.tsx'
@@ -24,7 +24,7 @@ function GameUI() {
   }, [screen])
 
   if (screen === 'start') {
-    return <App setScreen={setScreen} />
+    return <Menu setScreen={setScreen} />
   }
 
   if (screen === 'settings') {
