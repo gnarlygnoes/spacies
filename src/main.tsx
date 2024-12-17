@@ -5,11 +5,12 @@ import './index.css'
 import App from './App.tsx'
 import { initAndGetCanvas } from './canvas.ts'
 import { Game } from './game.ts'
+import Settings from './settings.tsx'
 // import { initAndGetCanvas } from './canvas'
 
 createRoot(document.getElementById('root')!).render(<GameUI />)
 
-export type CurrentScreen = 'start' | 'game'
+export type CurrentScreen = 'start' | 'game' | 'settings'
 
 function GameUI() {
   const [screen, setScreen] = useState<CurrentScreen>('start')
@@ -24,6 +25,10 @@ function GameUI() {
 
   if (screen === 'start') {
     return <App setScreen={setScreen} />
+  }
+
+  if (screen === 'settings') {
+    return <Settings setScreen={setScreen} />
   }
 
   return (

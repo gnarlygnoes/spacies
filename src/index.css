@@ -70,3 +70,7 @@ button:focus-visible {
   }
 
 }
+
+.menu {
+  display: flex;
+}

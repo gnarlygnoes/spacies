@@ -19,9 +19,10 @@ export class Settings {
   shoot = ' '
   pause = 'p'
   unpause = 'Enter'
+  menu = 'Escape'
 
   constructor() {
-    window.addEventListener("keypress", (e) => {
+    window.addEventListener("keydown", (e) => {
       if (e.key === this.moveLeft || e.key === 'ArrowLeft') {
         this.keys.left.pressed = true
       }
