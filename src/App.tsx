@@ -1,6 +1,8 @@
 import './App.css'
 import { CurrentScreen } from './main'
 
+export const clickMeText = 'Click me!!! Please! PLEEEEAASE!!! CLICK MEEEEE!!'
+
 function Menu(props: { setScreen: (screen: CurrentScreen) => void }) {
   const { setScreen } = props
 
@@ -10,7 +12,7 @@ function Menu(props: { setScreen: (screen: CurrentScreen) => void }) {
       <div className='menu'>
         <button className='menu-button' onClick={() => {
           setScreen('game')
-        }}>Click me to start the game!</button>
+        }}>{clickMeText}</button>
 
         <button className='menu-button'>Change Settings</button>
 

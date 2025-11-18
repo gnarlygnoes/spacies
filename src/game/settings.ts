@@ -32,7 +32,6 @@ export class Settings {
       if (e.key === this.shoot) {
         this.keys.shoot.pressed = true
       }
-      console.log(e)
     })
 
     window.addEventListener("keypress", (e) => {

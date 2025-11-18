@@ -1,4 +1,5 @@
 import { CurrentScreen } from './main'
+import { clickMeText } from './App'
 
 function Settings(props: { setScreen: (screen: CurrentScreen) => void }) {
   const { setScreen } = props
@@ -9,7 +10,7 @@ function Settings(props: { setScreen: (screen: CurrentScreen) => void }) {
 
       <button onClick={() => {
         setScreen('game')
-      }}>Click me to start the game!</button>
+      }}>{clickMeText}</button>
     </>
   )
 }
