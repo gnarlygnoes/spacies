@@ -1,18 +1,22 @@
-import { CurrentScreen } from './main'
-import { clickMeText } from './App'
+import { CurrentScreen } from "./main";
+import { clickMeText } from "./App";
 
-function Settings(props: { setScreen: (screen: CurrentScreen) => void }) {
-  const { setScreen } = props
+export default function Settings(props: {
+  setScreen: (screen: CurrentScreen) => void;
+}) {
+  const { setScreen } = props;
 
   return (
     <>
-      <h1>Welcome to Spacies!</h1>
+      <h2>There are no settings rofl. This is just a spacies game...</h2>
 
-      <button onClick={() => {
-        setScreen('game')
-      }}>{clickMeText}</button>
+      <button
+        onClick={() => {
+          setScreen("start");
+        }}
+      >
+        {clickMeText}
+      </button>
     </>
-  )
+  );
 }
-
-export default Settings 

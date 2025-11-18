@@ -1,46 +1,42 @@
-//import * as React from 'react'
-import { useEffect, useState } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import Menu from './App.tsx'
-import { initAndGetCanvas } from './canvas.ts'
-import { Game } from './game.ts'
-import Settings from './settings.tsx'
-// import { initAndGetCanvas } from './canvas'
+import { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import Menu from "./App.tsx";
+import { initAndGetCanvas } from "./canvas.ts";
+import { Game } from "./game.ts";
+import Settings from "./settings.tsx";
 
-createRoot(document.getElementById('root')!).render(<GameUI />)
+createRoot(document.getElementById("root")!).render(<GameUI />);
 
-export type CurrentScreen = 'start' | 'game' | 'settings' | 'defeat' | 'victory'
+export type CurrentScreen =
+  | "start"
+  | "game"
+  | "settings"
+  | "defeat"
+  | "victory";
 
-function GameUI() {
-  const [screen, setScreen] = useState<CurrentScreen>('start')
+export default function GameUI() {
+  const [screen, setScreen] = useState<CurrentScreen>("start");
 
   useEffect(() => {
-    if (screen === 'game') {
-      const canvas = initAndGetCanvas()
-      const game = new Game(canvas)
-      game.initGame()
+    if (screen === "game") {
+      const canvas = initAndGetCanvas();
+      const game = new Game(canvas);
+      game.initGame();
     }
-  }, [screen])
+  }, [screen]);
 
-  if (screen === 'start') {
-    return <Menu setScreen={setScreen} />
+  if (screen === "start") {
+    return <Menu setScreen={setScreen} />;
   }
 
-  if (screen === 'settings') {
-    return <Settings setScreen={setScreen} />
+  if (screen === "settings") {
+    return <Settings setScreen={setScreen} />;
   }
-
-  // if (screen === '
 
   return (
-    //<StrictMode>
-    //  <App />
-    //</StrictMode>
-    //<div className='main'>
     <div className="canvas-container">
       <canvas id="canvas" />
     </div>
-    //</div>
-  )
+  );
 }

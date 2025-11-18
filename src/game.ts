@@ -75,8 +75,8 @@ export class Game {
 
   initPlayerBullet() {
     if (this.player.shooting) {
-      let r = 5;
-      let bullet: Bullet = {
+      const r = 5;
+      const bullet: Bullet = {
         r,
         x: this.player.rec.x + this.player.rec.w / 2 - r / 2,
         y: this.player.rec.y,
@@ -106,8 +106,8 @@ export class Game {
   }
 
   initEnemyBullet(e: Enemy) {
-    let r = 3;
-    let b: Bullet = {
+    const r = 3;
+    const b: Bullet = {
       r,
       x: e.rec.x + e.rec.w / 2 - r / 2,
       y: e.rec.y + e.rec.h,
@@ -303,7 +303,7 @@ export class Game {
 
   handleCollisions() {
     for (const [id, bullet] of this.pBullets) {
-      let bulletRec: Rec = {
+      const bulletRec: Rec = {
         x: bullet.x,
         y: bullet.y,
         w: bullet.r,
@@ -326,7 +326,7 @@ export class Game {
       }
     }
 
-    for (let [id, bullet] of this.eBullets) {
+    for (const [id, bullet] of this.eBullets) {
       const bulletRec: Rec = {
         x: bullet.x,
         y: bullet.y,
@@ -370,8 +370,8 @@ export class Game {
 
   shoot() {
     let numCanShoot = 0;
-    for (let row of this.enemies) {
-      for (let enemy of row) {
+    for (const row of this.enemies) {
+      for (const enemy of row) {
         if (enemy.canShoot) {
           numCanShoot++;
         }
@@ -435,7 +435,7 @@ export class Game {
   }
 
   drawStars() {
-    for (let star of this.stars) {
+    for (const star of this.stars) {
       this.ctx.fillStyle = `rgb(${star.colour.r}
                                 ${star.colour.g}
                                 ${star.colour.b}`;
@@ -450,7 +450,7 @@ export class Game {
   }
 
   drawBullets() {
-    for (let bullet of this.pBullets.values()) {
+    for (const bullet of this.pBullets.values()) {
       const { x, y, r } = bullet;
       this.ctx.fillStyle = "yellow";
       this.ctx.beginPath();
@@ -458,7 +458,7 @@ export class Game {
       this.ctx.fill();
     }
 
-    for (let bullet of this.eBullets.values()) {
+    for (const bullet of this.eBullets.values()) {
       const { x, y, r } = bullet;
       this.ctx.fillStyle = "lightgreen";
       this.ctx.beginPath();
@@ -479,7 +479,7 @@ export class Game {
   }
 
   drawDefences() {
-    for (let defence of this.defences.values()) {
+    for (const defence of this.defences.values()) {
       if (defence.alive) {
         if (defence.health >= 8) {
           this.drawDefence(1, defence.rec);
